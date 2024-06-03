@@ -1,10 +1,19 @@
 import asyncio
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 
-from telegram.main import bootstrap_bot
+import config
+from routers import attach_dispatcher
+from commands import COMMANDS
 
 
 async def main():
-    await bootstrap_bot()
+    bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+    dispatcher = Dispatcher()
+    attach_dispatcher(dispatcher)
+    await bot.set_my_commands(COMMANDS)
+    print("Starting Telegram Polling")
+    await dispatcher.start_polling(bot)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,8 @@
-import logging
-
-from aiogram import types, filters, F, Router
+from aiogram import types, F, Router
 from .forms_dispatcher import forms_dispatcher
 from aiogram_forms.forms import Form, fields, FormsManager
 
-
-from client import Client
+from service import Service
 import structs
 import commands
 
@@ -26,9 +23,9 @@ class LoginForm(Form):
         data = await forms.get_data(LOGIN_FORM)
         try:
             creds = structs.AuthCredentials(**data)
-            obj = await Client.login(username=message.from_user.username, creds=creds)
+            obj = await Service.login(username=message.from_user.username, creds=creds)
             await message.answer(
-                text=f"Wadiii",
+                text=f"<pre>{obj.model_dump_json(indent=2)}</pre>",
                 reply_markup=types.ReplyKeyboardMarkup(
                     keyboard=[
                         [
@@ -43,7 +40,6 @@ class LoginForm(Form):
                 ),
             )
         except Exception as e:
-            raise e
             await message.answer(
                 text=f"Failed to Login.\n{e}",
                 reply_markup=types.ReplyKeyboardMarkup(
@@ -62,3 +58,7 @@ class LoginForm(Form):
                     ]
                 ),
             )
+
+
+async def cmd_login(message: types.Message, forms: FormsManager) -> None:
+    await forms.show(LOGIN_FORM)

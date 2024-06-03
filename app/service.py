@@ -1,20 +1,32 @@
+import json
 import aiohttp
 
 import structs
 from cache import rds
 
 
-class Client(object):
+class Service(object):
     BASE_URL = "http://localhost:8000/api/v1"
 
     @classmethod
-    async def api_call(cls):
+    def get_auth_data(cls, username: str):
+        user = rds.get(username)
+        if user:
+            return structs.AuthDataModel(**json.loads(user))
+
+    @classmethod
+    def get_auth_headers(cls, auth: structs.AuthDataModel):
+        return {"Authorization": f"Bearer {auth.token}"}
+
+    @classmethod
+    async def logout(cls, username: str):
         async with aiohttp.ClientSession() as session:
-            res = await session.post(
-                f"htpp://localhost:8000/api/v1/auth/login",
-                json={"email": "su@mail.com", "password": "password"},
+            await session.post(
+                f"{cls.BASE_URL}/auth/logout",
             )
-        return None
+            rds.delete(username)
+            return True
+        return False
 
     @classmethod
     async def login(cls, username: str, creds: structs.AuthCredentials):
@@ -39,21 +51,21 @@ class Client(object):
             return data
 
     @classmethod
-    async def get_client(cls, user: structs.User):
+    async def get_client(cls, auth: structs.AuthDataModel):
         async with aiohttp.ClientSession() as session:
             res = await session.get(
                 f"{cls.BASE_URL}/account/client/using-token", data=user
             )
             res_data: dict = await res.json()
-            data = Client(**res_data)
+            data = structs.Client(**res_data)
             return data
 
     @classmethod
-    async def create_client(cls, user: structs.User, client: structs.Client):
+    async def create_client(cls, auth: structs.AuthDataModel, client: structs.Client):
         async with aiohttp.ClientSession() as session:
             res = await session.post(
                 f"{cls.BASE_URL}/account/client/using-token", data=client
             )
             res_data: dict = await res.json()
-            data = Client(**res_data)
-            return Client
+            data = structs.Client(**res_data)
+            return structs.Client

@@ -2,6 +2,9 @@ from aiogram import types
 
 
 START_CMD = types.BotCommand(command="start", description="Start")
+ABOUT_CMD = types.BotCommand(command="about", description="About")
+HELP_CMD = types.BotCommand(command="help", description="Help")
+DOCS_CMD = types.BotCommand(command="docs", description="Docs")
 LOGIN_CMD = types.BotCommand(command="login", description="Login")
 REGISTER_CMD = types.BotCommand(command="register", description="Register")
 LOGOUT_CMD = types.BotCommand(command="logout", description="Logout")
@@ -21,4 +24,6 @@ COMMANDS = [
     PAYMENT_CMD,
     GET_CLIENT_CMD,
     ADD_CLIENT_CMD,
+    ABOUT_CMD,
+    HELP_CMD
 ]

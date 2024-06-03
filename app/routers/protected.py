@@ -1,0 +1,14 @@
+from aiogram.filters import Command
+from aiogram import Router
+
+from middleware.auth import AuthMiddleware
+from commands import USER_CMD, GET_CLIENT_CMD
+from handlers.user import cmd_user
+from handlers.client import cmd_get_client
+
+router = Router(name=__name__)
+router.message.middleware(AuthMiddleware())
+
+
+router.message(Command(commands=[USER_CMD.command]))(cmd_user)
+router.message(Command(commands=[GET_CLIENT_CMD.command]))(cmd_get_client)
