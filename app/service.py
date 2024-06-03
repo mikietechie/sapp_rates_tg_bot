@@ -15,12 +15,12 @@ class Service(object):
             return structs.AuthDataModel(**json.loads(user))
 
     @classmethod
-    def get_auth_headers(cls, auth: structs.AuthDataModel):
+    def get_headers(cls, auth: structs.AuthDataModel):
         return {"Authorization": f"Bearer {auth.token}"}
 
     @classmethod
-    async def logout(cls, username: str):
-        async with aiohttp.ClientSession() as session:
+    async def logout(cls, username: str,  auth: structs.AuthDataModel):
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
             await session.post(
                 f"{cls.BASE_URL}/auth/logout",
             )
@@ -52,9 +52,9 @@ class Service(object):
 
     @classmethod
     async def get_client(cls, auth: structs.AuthDataModel):
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
             res = await session.get(
-                f"{cls.BASE_URL}/account/client/using-token", data=user
+                f"{cls.BASE_URL}/account/client/using-token"
             )
             res_data: dict = await res.json()
             data = structs.Client(**res_data)
@@ -62,9 +62,9 @@ class Service(object):
 
     @classmethod
     async def create_client(cls, auth: structs.AuthDataModel, client: structs.Client):
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
             res = await session.post(
-                f"{cls.BASE_URL}/account/client/using-token", data=client
+                f"{cls.BASE_URL}/account/client/using-token"
             )
             res_data: dict = await res.json()
             data = structs.Client(**res_data)

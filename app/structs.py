@@ -7,26 +7,26 @@ import aiohttp
 
 
 class Client(BaseModel):
+    ID: int
+    # UpdatedAt: str
+    # CreatedAt: str
+    # DeletedAt: Any
     api_key: str
-    createdAt: str
-    deletedAt: Any
     domains: str
-    id: int
     name: str
     reads_available: int
     reads_used: int
-    updatedAt: str
-    user_id: int
+    # user_id: int
 
 
 class User(BaseModel):
     ID: int
-    CreatedAt: str
-    UpdatedAt: str
-    DeletedAt: Any
+    # CreatedAt: str
+    # UpdatedAt: str
+    # DeletedAt: Any
     email: str
     password: str
-    role: str
+    # role: str
     active: bool
 
 
