@@ -1,0 +1,27 @@
+networks:
+  system_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.77.0.0/16
+
+services:
+  app:
+    build:
+      context: .
+    restart: on-failure
+    volumes:
+      - ./app:/app
+    ports:
+      - "48002:8000"
+    env_file:
+      - .env
+    environment:
+      - BOT_NAME=mikedarlingtestbot
+      - BOT_TOKEN=7065292703:AAH6XULWljvxTNz1z0GNZ2GwshzaqB8aa2w
+      - REDIS_URI=
+    networks:
+      system_network:
+    container_name: app
+
+
