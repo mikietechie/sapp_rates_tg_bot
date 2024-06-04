@@ -18,7 +18,7 @@ class AuthMiddleware(BaseMiddleware):
     ) -> Any:
         auth = Service.get_auth_data(event.from_user.username)
         if not auth:
-            await event.answer(
+            await event.reply(
                 text=f"No User Was Found ",
                 reply_markup=types.ReplyKeyboardMarkup(
                     keyboard=[

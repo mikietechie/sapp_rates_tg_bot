@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any
+from typing import Optional
 from pydantic import BaseModel
-import aiohttp
 
 # from typing import Any, Optiona
 
@@ -17,6 +16,12 @@ class Client(BaseModel):
     reads_available: int
     reads_used: int
     # user_id: int
+
+
+class CreateClient(BaseModel):
+    domains: str
+    name: str
+    user_id: Optional[int] = 0
 
 
 class User(BaseModel):
