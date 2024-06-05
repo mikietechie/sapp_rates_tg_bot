@@ -13,7 +13,8 @@ Going straight to the point, shouting at the top of my voice, furiously punching
 Back to calm, I am a self taught developer but I did go to Software Engineering University as well. I have 7+ years of computer programming experience and four of them being proffessional work experience. I have written software that processed millions of dollars *i.e I am not a millionnaire, I was paid slightly less than 10k*.
 I am fluent in English and decent in Russian.
 
-![System Overview](https://github.com/mikietechie/gocurrenciesapi/blob/main/files/architecture.jpg)
+![Landing View](https://github.com/mikietechie/sapp_rates_tg_bot/blob/main/files/5.jpg)
+![System Overview](https://github.com/mikietechie/sapp_rates_tg_bot/blob/main/files/6.jpg)
 
 ## Introduction
 
@@ -34,7 +35,7 @@ Redis is an open source cache software. Redis stores data in key value pairs. Yo
 
 Data Source: SAPP Finance API
 SAPP Finance is a Golang powered fintech data API. Check it out here:
-<https://github.com/mikietechie/gocurrenciesapi>
+<https://github.com/mikietechie/sapp_rates_tg_bot>
 
 Authentication: Sessions
 In this project I implement sessions using the Telegram user details.
@@ -43,11 +44,132 @@ In this project I implement sessions using the Telegram user details.
 
 The system has 3 data models User, Client and Rate.
 
-![System Architecture](https://github.com/mikietechie/gocurrenciesapi/blob/main/files/architecture.jpg)
+![System Overview](https://github.com/mikietechie/sapp_rates_tg_bot/blob/main/files/6.jpg)
 
-![An Image of the API Documentation](https://github.com/mikietechie/gocurrenciesapi/blob/main/files/swagger.png)
+```python service.py
+import json
+import aiohttp
 
-![An Image of the database schema](https://github.com/mikietechie/gocurrenciesapi/blob/main/files/schema.png)
+import structs
+import config
+from cache import rds
+from errors import ServiceError
+
+
+class Service(object):
+    BASE_URL = config.API_URL
+
+    @classmethod
+    def get_auth_data(cls, username: str):
+        user = rds.get(username)
+        if user:
+            return structs.AuthDataModel(**json.loads(user))
+
+    @classmethod
+    def get_headers(cls, auth: structs.AuthDataModel):
+        return {"Authorization": f"Bearer {auth.token}"}
+
+    @classmethod
+    async def logout(cls, username: str, auth: structs.AuthDataModel):
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
+            res = await session.get(
+                f"{cls.BASE_URL}/auth/logout",
+            )
+            await ServiceError.throw(res)
+            rds.delete(username)
+            return True
+
+    @classmethod
+    async def login(cls, username: str, creds: structs.AuthCredentials):
+        async with aiohttp.ClientSession() as session:
+            res = await session.post(
+                f"{cls.BASE_URL}/auth/login",
+                json=creds.model_dump(),
+            )
+            await ServiceError.throw(res)
+            res_data: dict = await res.json()
+            obj = structs.AuthDataModel(**res_data)
+            rds.set(username, obj.model_dump_json())
+            return obj
+
+    @classmethod
+    async def register(cls, username: str, data: structs.AuthCredentials):
+        async with aiohttp.ClientSession() as session:
+            res = await session.post(
+                f"{cls.BASE_URL}/auth/register", json=data.model_dump()
+            )
+            await ServiceError.throw(res)
+            res_data: dict = await res.json()
+            data = structs.AuthDataModel(**res_data)
+            rds.set(username, data.model_dump_json())
+            return data
+
+    @classmethod
+    async def get_client(cls, auth: structs.AuthDataModel):
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
+            res = await session.get(f"{cls.BASE_URL}/account/client/using-token")
+            await ServiceError.throw(res)
+            res_data: dict = await res.json()
+            data = structs.Client(**res_data)
+            return data
+
+    @classmethod
+    async def create_client(
+        cls, auth: structs.AuthDataModel, data: structs.CreateClient
+    ):
+        data
+        async with aiohttp.ClientSession(headers=cls.get_headers(auth)) as session:
+            res = await session.post(
+                f"{cls.BASE_URL}/account/register", json=data.model_dump()
+            )
+            await ServiceError.throw(res)
+            res_data: dict = await res.json()
+            data = structs.Client(**res_data)
+            return data
+
+```
+
+```python middleware/auth.py
+from typing import Callable, Dict, Any, Awaitable
+from aiogram import BaseMiddleware
+from aiogram import types
+
+from service import Service
+import commands
+
+
+class AuthMiddleware(BaseMiddleware):
+    def __init__(self) -> None:
+        pass
+
+    async def __call__(
+        self,
+        handler: Callable[[types.Message, Dict[str, Any]], Awaitable[Any]],
+        event: types.Message,
+        data: Dict[str, Any],
+    ) -> Any:
+        auth = Service.get_auth_data(event.from_user.username)
+        if not auth:
+            await event.reply(
+                text=f"No User Was Found, Please Login Again or Register",
+                reply_markup=types.ReplyKeyboardMarkup(
+                    keyboard=[
+                        [
+                            types.KeyboardButton(text=f"/{commands.LOGIN_CMD.command}"),
+                        ],
+                        [
+                            types.KeyboardButton(
+                                text=f"/{commands.REGISTER_CMD.command}"
+                            ),
+                        ],
+                    ]
+                ),
+            )
+            return
+        data["auth"] = auth
+        return await handler(event, data)
+
+```
 
 ## Workflow
 
