@@ -4,6 +4,7 @@ from aiogram_forms.forms import Form, fields, FormsManager
 from service import Service
 import structs
 from .forms_dispatcher import forms_dispatcher
+import commands
 
 
 ClIENT_FORM = "client-form"
@@ -23,7 +24,16 @@ class ClientForm(Form):
         obj = await Service.create_client(
             auth=Service.get_auth_data(message.from_user.username), data=data
         )
-        await message.answer(text=f"<pre>{obj.model_dump_json(indent=2)}</pre>")
+        await message.answer(
+            text=f"<pre>{obj.model_dump_json(indent=2)}</pre>",
+            reply_markup=types.ReplyKeyboardMarkup(
+                keyboard=[
+                    [
+                        types.KeyboardButton(text=f"/{commands.PAYMENT_CMD.command}"),
+                    ]
+                ]
+            ),
+        )
 
 
 async def cmd_add_client(message: types.Message, forms: FormsManager) -> None:
@@ -32,5 +42,14 @@ async def cmd_add_client(message: types.Message, forms: FormsManager) -> None:
 
 async def cmd_get_client(message: types.Message, forms: FormsManager):
     auth = Service.get_auth_data(message.from_user.username)
-    client = await Service.get_client(auth)
-    await message.answer(f"<pre>{client.model_dump_json(indent=2)}</pre>")
+    obj = await Service.get_client(auth)
+    await message.answer(
+        text=f"<pre>{obj.model_dump_json(indent=2)}</pre>",
+        reply_markup=types.ReplyKeyboardMarkup(
+            keyboard=[
+                [
+                    types.KeyboardButton(text=f"/{commands.PAYMENT_CMD.command}"),
+                ]
+            ]
+        ),
+    )

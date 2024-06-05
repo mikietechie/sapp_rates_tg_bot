@@ -17,11 +17,19 @@ services:
     env_file:
       - .env
     environment:
-      - BOT_NAME=mikedarlingtestbot
-      - BOT_TOKEN=7065292703:AAH6XULWljvxTNz1z0GNZ2GwshzaqB8aa2w
-      - REDIS_URI=
+      - REDIS_HOST=cache
     networks:
       system_network:
     container_name: app
+    depends_on:
+      - cache
+  
+  cache:
+    restart: unless-stopped
+    image: redis:7.0.5-alpine
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
 
 
