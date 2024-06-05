@@ -5,6 +5,7 @@ from aiogram.client.default import DefaultBotProperties
 import config
 from routers import attach_dispatcher
 from commands import COMMANDS
+from log import logger
 
 
 async def main():
@@ -12,7 +13,7 @@ async def main():
     dispatcher = Dispatcher()
     attach_dispatcher(dispatcher)
     await bot.set_my_commands(COMMANDS)
-    print("Starting Telegram Polling")
+    logger.info("Starting Telegram Polling")
     await dispatcher.start_polling(bot)
 
 

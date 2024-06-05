@@ -1,6 +1,5 @@
 from aiogram import types
 
-from service import Service
 from structs import AuthDataModel
 
 

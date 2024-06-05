@@ -1,9 +1,5 @@
-import json
-
 from aiogram import types
 
-import cache
-import structs
 import commands
 from service import Service
 
@@ -24,10 +20,10 @@ async def cmd_start(message: types.Message):
                         types.KeyboardButton(text=f"/{commands.USER_CMD.command}"),
                     ],
                     [
-                        types.KeyboardButton(text=f"/{commands.LOGOUT_CMD.command}"),
+                        types.KeyboardButton(text=f"/{commands.HELP_CMD.command}"),
                     ],
                     [
-                        types.KeyboardButton(text=f"Ok Cool!"),
+                        types.KeyboardButton(text=f"/{commands.LOGOUT_CMD.command}"),
                     ],
                 ]
             ),
@@ -43,7 +39,10 @@ async def cmd_start(message: types.Message):
                     types.KeyboardButton(text=f"/{commands.LOGIN_CMD.command}"),
                 ],
                 [
-                    types.KeyboardButton(text=f"Ok Cool!"),
+                    types.KeyboardButton(text=f"/{commands.HELP_CMD.command}"),
+                ],
+                [
+                    types.KeyboardButton(text=f"/{commands.ABOUT_CMD.command}"),
                 ],
             ]
         ),

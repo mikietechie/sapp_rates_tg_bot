@@ -13,8 +13,8 @@ REGISTER_FORM = "register-form"
 
 @forms_dispatcher.register(REGISTER_FORM)
 class RegisterForm(Form):
-    email = fields.EmailField("Email", validators=[])
-    password = fields.TextField("Password", min_length=2, validators=[])
+    email = fields.EmailField("Email")
+    password = fields.TextField("Password", min_length=2)
 
     @classmethod
     async def callback(
@@ -42,17 +42,12 @@ class RegisterForm(Form):
                 reply_markup=types.ReplyKeyboardMarkup(
                     keyboard=[
                         [
-                            types.KeyboardButton(
-                                text=f"/{commands.LOGIN_CMD.command}"
-                            ),
+                            types.KeyboardButton(text=f"/{commands.LOGIN_CMD.command}"),
                         ],
                         [
                             types.KeyboardButton(
                                 text=f"/{commands.REGISTER_CMD.command}"
                             ),
-                        ],
-                        [
-                            types.KeyboardButton(text=f"No Thanks!"),
                         ],
                     ]
                 ),

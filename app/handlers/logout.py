@@ -17,9 +17,6 @@ async def cmd_logout(message: types.Message, auth: AuthDataModel) -> None:
                 [
                     types.KeyboardButton(text=f"/{commands.LOGIN_CMD.command}"),
                 ],
-                [
-                    types.KeyboardButton(text=f"Ok Cool!"),
-                ],
             ]
         ),
     )

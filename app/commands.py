@@ -16,14 +16,14 @@ ADD_CLIENT_CMD = types.BotCommand(command="add_client", description="Add Client"
 
 COMMANDS = [
     START_CMD,
-    LOGIN_CMD,
-    REGISTER_CMD,
-    LOGOUT_CMD,
-    DEACTIVATE_CMD,
+    GET_CLIENT_CMD,
     USER_CMD,
     PAYMENT_CMD,
-    GET_CLIENT_CMD,
-    ADD_CLIENT_CMD,
+    LOGIN_CMD,
+    LOGOUT_CMD,
+    HELP_CMD,
     ABOUT_CMD,
-    HELP_CMD
+    DEACTIVATE_CMD,
+    ADD_CLIENT_CMD,
+    REGISTER_CMD,
 ]

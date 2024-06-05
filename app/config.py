@@ -6,13 +6,15 @@ load_dotenv(override=True)
 env = os.environ
 
 # Server Conf
-HOST = env.get("APP_HOST", "0.0.0.0")
-PORT = int(env.get("APP_PORT", 8000))
 PROD = env.get("ENV") == "production"
+SERVER_URL = env.get("SERVER_URL") or "http://localhost:8000"
+API_URL = SERVER_URL + "/api/v1"
+
+# Redis
+REDIS_HOST = env.get("REDIS_HOST") or "localhost"
+REDIS_PORT = int(env.get("REDIS_PORT") or "6379")
+REDIS_DB = int(env.get("REDIS_DB") or "0")
+REDIS_PASSWORD = env.get("REDIS_PASSWORD")
 
 # Telegram Bot Conf
 BOT_TOKEN = env.get("BOT_TOKEN")
-BOT_PATH = "/bot"
-WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = "https://git-deploy-tg.the-devs.com" + BOT_PATH + WEBHOOK_PATH
-

@@ -33,9 +33,6 @@ class LoginForm(Form):
                                 text=f"/{commands.GET_CLIENT_CMD.command}"
                             ),
                         ],
-                        [
-                            types.KeyboardButton(text=f"Ok Cool!"),
-                        ],
                     ]
                 ),
             )
